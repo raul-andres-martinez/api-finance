@@ -1,3 +1,5 @@
+using Finance.Persistence.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace Finance.API
 {
@@ -13,6 +15,9 @@ namespace Finance.API
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddDbContext<FinanceContext>(options =>
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 
