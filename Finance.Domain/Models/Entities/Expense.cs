@@ -1,6 +1,6 @@
 ﻿using Finance.Domain.Enum;
 
-namespace Finance.Domain.Models
+namespace Finance.Domain.Models.Entities
 {
     public class Expense : Entity
     {

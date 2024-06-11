@@ -1,5 +1,8 @@
+using Finance.Domain.Models.Configs;
 using Finance.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Finance.Service.Extensions;
 
 namespace Finance.API
 {
@@ -16,8 +19,15 @@ namespace Finance.API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.Configure<EncryptionConfigs>(builder.Configuration.GetSection("EncryptionKey"));
+            builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<EncryptionConfigs>>().Value);
+
             builder.Services.AddDbContext<FinanceContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            var configuration = builder.Configuration;
+
+            builder.Services.AddServices(configuration);
 
             var app = builder.Build();
 

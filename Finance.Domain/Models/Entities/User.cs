@@ -1,4 +1,4 @@
-﻿namespace Finance.Domain.Models
+﻿namespace Finance.Domain.Models.Entities
 {
     public class User : Entity
     {
@@ -15,6 +15,6 @@
         public byte[] PasswordSalt { get; private set; }
         public byte[] PasswordHash { get; private set; }
 
-        public List<Expense> Expenses { get; private set;} = [];
+        public List<Expense> Expenses { get; private set; } = [];
     }
 }
