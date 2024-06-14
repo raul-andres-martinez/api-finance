@@ -20,10 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Finance.Persistence\Finance.Persistence.csproj" />
     <ProjectReference Include="..\Finance.Service\Finance.Service.csproj" />
   </ItemGroup>
