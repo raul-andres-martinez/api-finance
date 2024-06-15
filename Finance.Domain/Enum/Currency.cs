@@ -2,8 +2,9 @@
 {
     public enum Currency
     {
-        BRL = 0,
+        UNDEFINED = 0,
         USD = 1,
-        EUR = 2
+        EUR = 2,
+        BRL = 3
     }
 }

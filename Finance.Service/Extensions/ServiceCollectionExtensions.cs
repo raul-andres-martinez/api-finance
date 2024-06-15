@@ -13,10 +13,12 @@ namespace Finance.Service.Extensions
         {
             //Repositories
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IExpenseRepository, ExpenseRepository>();
 
             //Services
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IExpenseService, ExpenseService>();
 
             return services;
         }
