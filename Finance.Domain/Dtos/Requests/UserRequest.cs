@@ -1,6 +1,6 @@
 ﻿using Finance.Domain.Models.Entities;
 
-namespace Finance.Domain.Dtos
+namespace Finance.Domain.Dtos.Requests
 {
     public class UserRequest
     {
@@ -12,7 +12,7 @@ namespace Finance.Domain.Dtos
         }
 
         public string Name { get; set; }
-        public string Email { get ; set; }
+        public string Email { get; set; }
         public string Password { get; set; }
 
         public User ToEntity(byte[] passwordHash, byte[] passwordSalt)

@@ -1,6 +1,7 @@
 ﻿using Finance.Domain.Interfaces.Repositories;
 using Finance.Domain.Models.Entities;
 using Finance.Persistence.Context;
+using System.Data.Entity;
 
 namespace Finance.Persistence.Repositories
 {
@@ -18,6 +19,11 @@ namespace Finance.Persistence.Repositories
             await _context.Users.AddAsync(user);
             var changes = await _context.SaveChangesAsync();
             return changes > 0;
+        }
+
+        public async Task<User> GetUserByEmailAsync(string email)
+        {
+            return await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
         }
     }
 }

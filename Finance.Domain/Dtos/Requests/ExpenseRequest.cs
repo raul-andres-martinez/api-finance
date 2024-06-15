@@ -2,7 +2,7 @@
 using Finance.Domain.Models.Entities;
 using System.Text.Json.Serialization;
 
-namespace Finance.Domain.Dtos
+namespace Finance.Domain.Dtos.Requests
 {
     public class ExpenseRequest
     {

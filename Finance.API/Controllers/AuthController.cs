@@ -1,4 +1,4 @@
-﻿using Finance.Domain.Dtos;
+﻿using Finance.Domain.Dtos.Requests;
 using Finance.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
