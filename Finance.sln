@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34525.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.API", "Finance.API\Finance.API.csproj", "{25BD0F1D-D997-4DFF-97F2-86510783F3DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Finance.API", "Finance.API\Finance.API.csproj", "{25BD0F1D-D997-4DFF-97F2-86510783F3DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.Domain", "Finance.Domain\Finance.Domain.csproj", "{E6777A81-A251-49A1-A121-1621B171BFDA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Finance.Domain", "Finance.Domain\Finance.Domain.csproj", "{E6777A81-A251-49A1-A121-1621B171BFDA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.Service", "Finance.Service\Finance.Service.csproj", "{0ACA78E5-E5EE-4BA6-AC11-6740B4A4A362}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Finance.Service", "Finance.Service\Finance.Service.csproj", "{0ACA78E5-E5EE-4BA6-AC11-6740B4A4A362}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.Test", "Finance.Test\Finance.Test.csproj", "{6120C04C-E696-4A70-83F1-FE4827FDAE04}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Finance.Test", "Finance.Test\Finance.Test.csproj", "{6120C04C-E696-4A70-83F1-FE4827FDAE04}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.Persistence", "Finance.Persistence\Finance.Persistence.csproj", "{FCB20D55-729C-411F-AEBB-D0624D298D66}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Finance.Infra", "Finance.Infra\Finance.Infra.csproj", "{8F670942-7C2C-4FA2-BB2A-78B64B7E4EAC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.Infra", "Finance.Infra\Finance.Infra.csproj", "{8F670942-7C2C-4FA2-BB2A-78B64B7E4EAC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Finance.Persistence", "Finance.Persistence\Finance.Persistence.csproj", "{949ED941-12DD-4DCE-A752-0BB5A755A9C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,14 +37,14 @@ Global
 		{6120C04C-E696-4A70-83F1-FE4827FDAE04}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6120C04C-E696-4A70-83F1-FE4827FDAE04}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6120C04C-E696-4A70-83F1-FE4827FDAE04}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FCB20D55-729C-411F-AEBB-D0624D298D66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FCB20D55-729C-411F-AEBB-D0624D298D66}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FCB20D55-729C-411F-AEBB-D0624D298D66}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FCB20D55-729C-411F-AEBB-D0624D298D66}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8F670942-7C2C-4FA2-BB2A-78B64B7E4EAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8F670942-7C2C-4FA2-BB2A-78B64B7E4EAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F670942-7C2C-4FA2-BB2A-78B64B7E4EAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F670942-7C2C-4FA2-BB2A-78B64B7E4EAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{949ED941-12DD-4DCE-A752-0BB5A755A9C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{949ED941-12DD-4DCE-A752-0BB5A755A9C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{949ED941-12DD-4DCE-A752-0BB5A755A9C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{949ED941-12DD-4DCE-A752-0BB5A755A9C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

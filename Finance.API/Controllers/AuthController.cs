@@ -15,8 +15,8 @@ namespace Finance.API.Controllers
             _userService = userService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddUser(UserRequest request)
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(UserRequest request)
         {
             var response = await _userService.AddUserAsync(request);
 
@@ -26,6 +26,19 @@ namespace Finance.API.Controllers
             }
 
             return BadRequest();
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginRequest request)
+        {
+            var response = await _userService.LoginAsync(request);
+
+            if (!response.Success) 
+            {
+                return BadRequest(response.Error);
+            }
+
+            return Ok(response.Value);
         }
     }
 }

@@ -4,11 +4,11 @@
     {
         protected Result(bool success, string error)
         {
-            if(success && error != string.Empty)
-                throw new InvalidOperationException();
+            if (success && !string.IsNullOrEmpty(error))
+                throw new InvalidOperationException("A successful result cannot have an error message.");
 
-            if(success && error == string.Empty) 
-                throw new InvalidOperationException();
+            if (!success && string.IsNullOrEmpty(error))
+                throw new InvalidOperationException("A failure result must have an error message.");
 
             Success = success;
             Error = error;

@@ -28,8 +28,8 @@ namespace Finance.Service.Services
             var entity = request.ToEntity(user.Value.Uid);
             var result = await _expenseRepository.AddExpense(entity);
 
-            return result ? Result.Failure("Failed to add new expense.") :
-                Result.Ok();
+            return result ? Result.Ok() :
+                Result.Failure("Failed to add new expense.");
         }
     }
 }

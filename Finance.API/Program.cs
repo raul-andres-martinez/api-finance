@@ -3,6 +3,10 @@ using Finance.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Finance.Service.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.OpenApi.Models;
 
 namespace Finance.API
 {
@@ -17,7 +21,37 @@ namespace Finance.API
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "Finance API", Version = "v1" });
+
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] { }
+                    }
+                });
+            });
+
+            builder.Services.Configure<JwtConfigs>(builder.Configuration.GetSection("JwtConfigs"));
+            builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<JwtConfigs>>().Value);
 
             builder.Services.Configure<EncryptionConfigs>(builder.Configuration.GetSection("EncryptionKey"));
             builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<EncryptionConfigs>>().Value);
@@ -28,6 +62,24 @@ namespace Finance.API
             var configuration = builder.Configuration;
 
             builder.Services.AddServices(configuration);
+
+            var jwtConfig = builder.Configuration.GetSection("JwtConfigs").Get<JwtConfigs>() ?? throw new NullReferenceException();
+
+            builder.Services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x =>
+            {
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.JwtKey ?? throw new NullReferenceException())),
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtConfig.Issuer ?? throw new NullReferenceException(),
+                    ValidateAudience = false
+                };
+            });
+            builder.Services.AddAuthorization();
 
             var app = builder.Build();
 
@@ -40,6 +92,7 @@ namespace Finance.API
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
 

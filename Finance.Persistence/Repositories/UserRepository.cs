@@ -1,7 +1,7 @@
 ﻿using Finance.Domain.Interfaces.Repositories;
 using Finance.Domain.Models.Entities;
 using Finance.Persistence.Context;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Persistence.Repositories
 {
@@ -23,7 +23,9 @@ namespace Finance.Persistence.Repositories
 
         public async Task<User> GetUserByEmailAsync(string email)
         {
-            return await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
+            //TODO - Fix null reference w result
+            return user;
         }
     }
 }
