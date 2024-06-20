@@ -20,6 +20,8 @@ namespace Finance.Service.Extensions
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IExpenseService, ExpenseService>();
 
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
             return services;
         }
     }

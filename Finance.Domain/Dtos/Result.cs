@@ -24,9 +24,7 @@
 
         public static Result<T> Failure<T>(string message)
         {
-            var obj = default(T) ?? throw new InvalidOperationException();
-
-            return new Result<T>(obj, false, message);
+            return new Result<T>(default(T), false, message);
         }
 
         public static Result<T> Ok<T>(T value)
@@ -42,10 +40,10 @@
 
     public class Result<T> : Result
     {
-        public T Value { get; set; }
+        public T? Value { get; set; }
 
-        protected internal Result(T value, bool success, string error) 
-            : base(success, error) 
+        protected internal Result(T? value, bool success, string error)
+            : base(success, error)
         {
             Value = value;
         }

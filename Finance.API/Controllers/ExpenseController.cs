@@ -31,6 +31,11 @@ namespace Finance.API.Controllers
                 return Unauthorized();
             }
 
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var response = await _expenseService.AddExpenseAsync(userEmail, request);
 
             if (!response.Success)
@@ -39,6 +44,23 @@ namespace Finance.API.Controllers
             }
 
             return Ok();
+        }
+
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetExpenses([FromQuery] ExpensesFilterRequest request)
+        {
+            var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+
+            if (string.IsNullOrEmpty(userEmail))
+            {
+                return Unauthorized();
+            }
+
+            var response = await _expenseService.GetFilteredExpensesAsync(userEmail, request);
+
+            return Ok(response);
         }
     }
 }
