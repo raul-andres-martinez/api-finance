@@ -1,9 +1,11 @@
 ﻿using Finance.Domain.Dtos;
 using Finance.Domain.Dtos.Requests;
 using Finance.Domain.Dtos.Responses;
+using Finance.Domain.Enum;
 using Finance.Domain.Interfaces.Repositories;
 using Finance.Domain.Interfaces.Services;
 using Finance.Domain.Models.Entities;
+using static Finance.Domain.Constants.Constant;
 
 namespace Finance.Service.Services
 {
@@ -28,7 +30,8 @@ namespace Finance.Service.Services
         {
             var result = await _userRepository.GetUserByEmailAsync(email);
 
-            return result is null ? Result.Failure<User>("No user found.") :
+            return result is null ? 
+                Result.Failure<User>("No user found.", ErrorCode.USER_NOT_FOUND):
                 Result.Ok(result);
         }
 
@@ -38,14 +41,14 @@ namespace Finance.Service.Services
 
             if (!user.Success || user.Value is null)
             {
-                return Result.Failure<LoginResponse>(user.Error);
+                return Result.Failure<LoginResponse>(ErrorMessages.Auth.InvalidLogin, ErrorCode.RESOURCE_NOT_FOUND);
             }
 
             var passwordValid = _authService.VerifyPasswordHash(request.Password, user.Value.PasswordHash, user.Value.PasswordSalt);
 
             if (!passwordValid)
             {
-                return Result.Failure<LoginResponse>("Email and password does not match.");
+                return Result.Failure<LoginResponse>(ErrorMessages.Auth.InvalidLogin, ErrorCode.RESOURCE_NOT_FOUND);
             }
 
             var token = _authService.CreateJwtToken(user.Value.Email);

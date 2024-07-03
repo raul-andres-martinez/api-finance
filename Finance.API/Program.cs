@@ -63,6 +63,18 @@ namespace Finance.API
 
             builder.Services.AddServices(configuration);
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin",
+                    policy =>
+                    {
+                        policy.WithOrigins("http://localhost:4200")
+                              .AllowAnyHeader()
+                              .AllowAnyMethod()
+                              .AllowCredentials();
+                    });
+            });
+
             var jwtConfig = builder.Configuration.GetSection("JwtConfigs").Get<JwtConfigs>() ?? throw new NullReferenceException();
 
             builder.Services.AddAuthentication(x =>
@@ -92,9 +104,9 @@ namespace Finance.API
 
             app.UseHttpsRedirection();
 
+            app.UseCors("AllowSpecificOrigin");
             app.UseAuthentication();
             app.UseAuthorization();
-
 
             app.MapControllers();
 

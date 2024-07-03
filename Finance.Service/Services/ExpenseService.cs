@@ -2,6 +2,7 @@
 using Finance.Domain.Dtos;
 using Finance.Domain.Dtos.Requests;
 using Finance.Domain.Dtos.Responses;
+using Finance.Domain.Enum;
 using Finance.Domain.Interfaces.Repositories;
 using Finance.Domain.Interfaces.Services;
 using Finance.Domain.Models.Entities;
@@ -25,7 +26,7 @@ namespace Finance.Service.Services
         {
             var user = await GetUserAsync(userEmail);
 
-            if (!user.Success) 
+            if (!user.Success || user.Value == null) 
             {
                 return user;
             }
@@ -33,17 +34,18 @@ namespace Finance.Service.Services
             var entity = request.ToEntity(user.Value.Uid);
             var result = await _expenseRepository.AddExpense(entity);
 
-            return result ? Result.Ok() :
-                Result.Failure("Failed to add new expense.");
+            return result ? 
+                Result.Ok() :
+                Result.Failure("Failed to add new expense.", ErrorCode.DATABASE_ERROR);
         }
 
         public async Task<Result<List<ExpenseResponse>>> GetFilteredExpensesAsync(string userEmail, ExpensesFilterRequest request)
         {
             var user = await GetUserAsync(userEmail);
 
-            if (!user.Success)
+            if (!user.Success || user.Value == null)
             {
-                return Result.Failure<List<ExpenseResponse>>(user.Error);
+                return Result.Failure<List<ExpenseResponse>>(user.Error, user.ErrorCode);
             }
 
             var expenses = await _expenseRepository.GetFilteredExpensesAsync(userEmail, request);
@@ -57,7 +59,7 @@ namespace Finance.Service.Services
 
             if (expenseResponse == null)
             {
-                return Result.Failure<List<ExpenseResponse>>("Failed to map expenses.");
+                return Result.Failure<List<ExpenseResponse>>("Failed to map expenses.", ErrorCode.INTERNAL_ERROR);
             }
 
             return Result.Ok(expenseResponse);
@@ -67,9 +69,9 @@ namespace Finance.Service.Services
         {
             var user = await _userService.GetUserByEmailAsync(userEmail);
 
-            if (!user.Success)
+            if (!user.Success || user.Value == null)
             {
-                return Result.Failure<User>(user.Error);
+                return Result.Failure<User>(user.Error, user.ErrorCode);
             }
 
             return Result.Ok(user.Value);
