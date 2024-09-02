@@ -1,10 +1,10 @@
 ﻿namespace Finance.Domain.Models.Configs
 {
-    public class JwtConfigs
+    public class JwtConfiguration
     {
-        public JwtConfigs() { }
+        public JwtConfiguration() { }
 
-        public JwtConfigs(string jwtKey, string? issuer)
+        public JwtConfiguration(string jwtKey, string? issuer)
         {
             JwtKey = jwtKey;
             Issuer = issuer;

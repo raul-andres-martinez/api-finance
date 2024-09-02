@@ -1,8 +1,7 @@
 ﻿using System.Net;
-using Finance.Domain.Models.Result;
 using Microsoft.AspNetCore.Mvc;
 
-namespace PontoAPonto.Domain.Models
+namespace Finance.Domain.Utils.Result
 {
     public class CustomActionResult : IActionResult
     {

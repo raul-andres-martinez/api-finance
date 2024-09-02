@@ -50,8 +50,8 @@ namespace Finance.API
                 });
             });
 
-            builder.Services.Configure<JwtConfigs>(builder.Configuration.GetSection("JwtConfigs"));
-            builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<JwtConfigs>>().Value);
+            builder.Services.Configure<JwtConfiguration>(builder.Configuration.GetSection("JwtConfigs"));
+            builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<JwtConfiguration>>().Value);
 
             builder.Services.Configure<EncryptionConfigs>(builder.Configuration.GetSection("EncryptionKey"));
             builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<EncryptionConfigs>>().Value);
@@ -75,7 +75,7 @@ namespace Finance.API
                     });
             });
 
-            var jwtConfig = builder.Configuration.GetSection("JwtConfigs").Get<JwtConfigs>() ?? throw new NullReferenceException();
+            var jwtConfig = builder.Configuration.GetSection("JwtConfigs").Get<JwtConfiguration>() ?? throw new NullReferenceException();
 
             builder.Services.AddAuthentication(x =>
             {

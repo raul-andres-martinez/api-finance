@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Text.Json.Serialization;
 
-namespace Finance.Domain.Models.Result
+namespace Finance.Domain.Utils.Result
 {
     public class CustomError
     {
