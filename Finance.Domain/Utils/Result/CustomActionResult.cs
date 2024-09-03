@@ -16,7 +16,7 @@ namespace Finance.Domain.Utils.Result
             StatusCode = error.StatusCode;
         }
 
-        public CustomActionResult(HttpStatusCode statusCode = HttpStatusCode.OK)
+        protected CustomActionResult(HttpStatusCode statusCode = HttpStatusCode.OK)
         {
             Success = true;
             StatusCode = statusCode;
@@ -43,6 +43,11 @@ namespace Finance.Domain.Utils.Result
             }
 
             await result.ExecuteResultAsync(context);
+        }
+
+        public static CustomActionResult Created()
+        {
+            return new CustomActionResult(HttpStatusCode.Created);
         }
 
         public static CustomActionResult NoContent()

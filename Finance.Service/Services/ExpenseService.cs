@@ -1,80 +1,82 @@
 ﻿using AutoMapper;
-using Finance.Domain.Dtos;
 using Finance.Domain.Dtos.Requests;
 using Finance.Domain.Dtos.Responses;
-using Finance.Domain.Enum;
-using Finance.Domain.Interfaces.Repositories;
 using Finance.Domain.Interfaces.Services;
 using Finance.Domain.Models.Entities;
+using Finance.Domain.Utils.Result;
 
 namespace Finance.Service.Services
 {
     public class ExpenseService : IExpenseService
     {
-        private readonly IExpenseRepository _expenseRepository;
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
 
-        public ExpenseService(IExpenseRepository expenseRepository, IUserService userService, IMapper mapper)
+        public ExpenseService(IUserService userService, IMapper mapper)
         {
-            _expenseRepository = expenseRepository;
             _userService = userService;
             _mapper = mapper;
         }
 
-        public async Task<Result> AddExpenseAsync(string userEmail, ExpenseRequest request)
+        public async Task<CustomActionResult> AddExpenseAsync(string userEmail, ExpenseRequest request)
         {
-            var user = await GetUserAsync(userEmail);
+            throw new NotImplementedException();
 
-            if (!user.Success || user.Value == null) 
-            {
-                return user;
-            }
+            //var user = await GetUserAsync(userEmail);
 
-            var entity = request.ToEntity(user.Value.Uid);
-            var result = await _expenseRepository.AddExpense(entity);
+            //if (!user.Success || user.Value == null) 
+            //{
+            //    return user;
+            //}
 
-            return result ? 
-                Result.Ok() :
-                Result.Failure("Failed to add new expense.", ErrorCode.DATABASE_ERROR);
+            //var entity = request.ToEntity(user.Value.Uid);
+            //var result = await _expenseRepository.AddExpense(entity);
+
+            //return result ? 
+            //    Result.Ok() :
+            //    Result.Failure("Failed to add new expense.", ErrorCode.DATABASE_ERROR);
         }
 
-        public async Task<Result<List<ExpenseResponse>>> GetFilteredExpensesAsync(string userEmail, ExpensesFilterRequest request)
+        public async Task<CustomActionResult<List<ExpenseResponse>>> GetFilteredExpensesAsync(string userEmail, ExpensesFilterRequest request)
         {
-            var user = await GetUserAsync(userEmail);
+            throw new NotImplementedException();
 
-            if (!user.Success || user.Value == null)
-            {
-                return Result.Failure<List<ExpenseResponse>>(user.Error, user.ErrorCode);
-            }
+            //var user = await GetUserAsync(userEmail);
 
-            var expenses = await _expenseRepository.GetFilteredExpensesAsync(userEmail, request);
+            //if (!user.Success || user.Value == null)
+            //{
+            //    return Result.Failure<List<ExpenseResponse>>(user.Error, user.ErrorCode);
+            //}
 
-            if (expenses == null)
-            {
-                return Result.Ok(new List<ExpenseResponse>());
-            }
+            //var expenses = await _expenseRepository.GetFilteredExpensesAsync(userEmail, request);
 
-            var expenseResponse = _mapper.Map<List<ExpenseResponse>>(expenses);
+            //if (expenses == null)
+            //{
+            //    return Result.Ok(new List<ExpenseResponse>());
+            //}
 
-            if (expenseResponse == null)
-            {
-                return Result.Failure<List<ExpenseResponse>>("Failed to map expenses.", ErrorCode.INTERNAL_ERROR);
-            }
+            //var expenseResponse = _mapper.Map<List<ExpenseResponse>>(expenses);
 
-            return Result.Ok(expenseResponse);
+            //if (expenseResponse == null)
+            //{
+            //    return Result.Failure<List<ExpenseResponse>>("Failed to map expenses.", ErrorCode.INTERNAL_ERROR);
+            //}
+
+            //return Result.Ok(expenseResponse);
         }
 
-        private async Task<Result<User>> GetUserAsync(string userEmail)
+        private async Task<CustomActionResult<User>> GetUserAsync(string userEmail)
         {
-            var user = await _userService.GetUserByEmailAsync(userEmail);
+            throw new NotImplementedException();
 
-            if (!user.Success || user.Value == null)
-            {
-                return Result.Failure<User>(user.Error, user.ErrorCode);
-            }
+            //var user = await _userService.GetUserByEmailAsync(userEmail);
 
-            return Result.Ok(user.Value);
+            //if (!user.Success || user.Value == null)
+            //{
+            //    return Result.Failure<User>(user.Error, user.ErrorCode);
+            //}
+
+            //return Result.Ok(user.Value);
         }
     }
 }
