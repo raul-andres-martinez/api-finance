@@ -42,10 +42,43 @@ namespace Finance.Service.Services
             return CustomActionResult.Created();
         }
 
+        public async Task<CustomActionResult<User>> GetUserByEmailAsync(string email)
+        {
+            var user = await _context.Users
+                .Where(u => u.Email == email).FirstOrDefaultAsync();
+            
+            if (user is null)
+            {
+                return UserError.NotFound;
+            }
+
+            return user;
+        }
+
+        public async Task<CustomActionResult<LoginResponse>> LoginAsync(LoginRequest request)
+        {
+            var user = await GetUserByEmailAsync(request.Email);
+
+            if (!user.Success)
+            {
+                return UserError.InvalidLogin;
+            }
+
+            var passwordValid = PasswordHasher.VerifyPasswordHash(request.Password, user.Value.PasswordHash, user.Value.PasswordSalt);
+
+            if (!passwordValid)
+            {
+                return UserError.InvalidLogin;
+            }
+
+            var token = JwtUtils.CreateJwtToken(user.Value.Email);
+
+            return new LoginResponse(TokenType.Bearer, token);
+        }
+
         private async Task<CustomActionResult> CheckDuplicateUserAsync(string email)
         {
-            var duplicate = await _context.Users
-                .Where(u => u.Email == email).FirstOrDefaultAsync();
+            var duplicate = await GetUserByEmailAsync(email);
 
             if (duplicate is not null)
             {
@@ -53,39 +86,6 @@ namespace Finance.Service.Services
             }
 
             return CustomActionResult.NoContent();
-        }
-
-        public async Task<CustomActionResult<User>> GetUserByEmailAsync(string email)
-        {
-            throw new NotImplementedException();
-            //var result = await _userRepository.GetUserByEmailAsync(email);
-
-            //return result is null ? 
-            //    Result.Failure<User>("No user found.", ErrorCode.USER_NOT_FOUND):
-            //    Result.Ok(result);
-        }
-
-        public async Task<CustomActionResult<LoginResponse>> LoginAsync(LoginRequest request)
-        {
-            throw new NotImplementedException();
-
-            //var user = await GetUserByEmailAsync(request.Email);
-
-            //if (!user.Success || user.Value is null)
-            //{
-            //    return Result.Failure<LoginResponse>(ErrorMessages.Auth.InvalidLogin, ErrorCode.RESOURCE_NOT_FOUND);
-            //}
-
-            //var passwordValid = PasswordHasher.VerifyPasswordHash(request.Password, user.Value.PasswordHash, user.Value.PasswordSalt);
-
-            //if (!passwordValid)
-            //{
-            //    return Result.Failure<LoginResponse>(ErrorMessages.Auth.InvalidLogin, ErrorCode.RESOURCE_NOT_FOUND);
-            //}
-
-            //var token = JwtUtils.CreateJwtToken(user.Value.Email);
-
-            //return Result.Ok(new LoginResponse("Bearer", token));
         }
     }
 }

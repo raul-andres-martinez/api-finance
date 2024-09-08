@@ -30,8 +30,9 @@ namespace Finance.API.Controllers
 
         [HttpPost("login")]
         [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(CustomActionResult<LoginResponse>), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Login(LoginRequest request)
+        [ProducesResponseType(typeof(CustomError), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(CustomError), StatusCodes.Status500InternalServerError)]
+        public async Task<CustomActionResult> Login(LoginRequest request)
         {
             return await _userService.LoginAsync(request);
         }

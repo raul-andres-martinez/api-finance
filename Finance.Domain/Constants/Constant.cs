@@ -2,25 +2,30 @@
 {
     public static class Constant
     {
-        public struct ErrorMessage
+        public static class TokenType
         {
-            public struct User
+            public const string Bearer = "Bearer";
+        }
+
+        public static class ErrorMessage
+        {
+            public static class User
             {
                 public const string NotFound = "User not found.";
                 public const string FailedToCreate = "Failed to create user.";
                 public const string EmailAlreadyInUse = "Email already in use.";
+                public const string InvalidLogin = "Email or password does not match.";
             }
-
-            public const string InvalidLogin = "Email or password does not match.";            
         }
 
-        public struct ErrorCode
+        public static class ErrorCode
         {
-            public struct User
+            public static class User
             {
                 public const string NotFound = "User.NotFound";
                 public const string FailedToCreate = "User.FailedToCreate";
                 public const string EmailAlreadyInUse = "User.EmailAlreadyInUse";
+                public const string InvalidLogin = "User.InvalidLogin";
             }
         }
     }

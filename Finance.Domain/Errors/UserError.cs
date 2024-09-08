@@ -14,5 +14,8 @@ namespace Finance.Domain.Errors
 
         public static CustomError EmailAlreadyInUse => new CustomError(
             HttpStatusCode.BadRequest, ErrorCode.User.EmailAlreadyInUse, ErrorMessage.User.EmailAlreadyInUse);
+
+        public static CustomError InvalidLogin => new CustomError(
+            HttpStatusCode.BadRequest, ErrorCode.User.InvalidLogin, ErrorMessage.User.InvalidLogin);
     }
 }
