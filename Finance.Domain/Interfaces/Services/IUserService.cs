@@ -8,7 +8,6 @@ namespace Finance.Domain.Interfaces.Services
     public interface IUserService
     {
         Task<CustomActionResult> AddUserAsync(UserRequest request);
-        Task<CustomActionResult<User>> GetUserByEmailAsync(string email);
         Task<CustomActionResult<LoginResponse>> LoginAsync(LoginRequest request);
     }
 }

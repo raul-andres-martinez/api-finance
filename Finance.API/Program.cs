@@ -15,7 +15,7 @@ namespace Finance.API
 
             ConfigureSwagger(builder);
 
-            builder.Services.AddServices(builder.Configuration);
+            builder.Services.AddAppServices(builder.Configuration);
 
             var app = builder.Build();
 
