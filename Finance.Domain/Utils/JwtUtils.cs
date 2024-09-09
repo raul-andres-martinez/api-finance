@@ -1,5 +1,4 @@
-﻿using Finance.Domain.Models.Configs;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -8,12 +7,10 @@ namespace Finance.Domain.Utils
 {
     public static class JwtUtils
     { 
-        public static string CreateJwtToken(string email)
+        public static string CreateJwtToken(string email, string key, string issuer)
         {
-            var configuration = GetJwtConfiguration();
-
             var handler = new JwtSecurityTokenHandler();
-            var privateKey = Encoding.UTF8.GetBytes(configuration.JwtKey!);
+            var privateKey = Encoding.UTF8.GetBytes(key);
 
             var credentials = new SigningCredentials(
                         new SymmetricSecurityKey(privateKey),
@@ -27,22 +24,12 @@ namespace Finance.Domain.Utils
                 SigningCredentials = credentials,
                 IssuedAt = DateTime.UtcNow,
                 Expires = DateTime.UtcNow.AddHours(12),
-                Issuer = configuration.Issuer,
+                Issuer = issuer,
                 Subject = claim
             };
 
             var token = handler.CreateToken(tokenDescriptor);
             return handler.WriteToken(token);
-        }
-
-        private static JwtConfiguration GetJwtConfiguration()
-        {
-            var jwtConfiguration = new JwtConfiguration();
-
-            _ = jwtConfiguration.JwtKey ?? throw new InvalidOperationException(nameof(jwtConfiguration.JwtKey));
-            _ = jwtConfiguration.Issuer ?? throw new InvalidOperationException(nameof(jwtConfiguration.Issuer));
-
-            return jwtConfiguration;
         }
     }
 }

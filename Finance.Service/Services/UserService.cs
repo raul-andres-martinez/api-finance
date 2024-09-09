@@ -2,6 +2,7 @@
 using Finance.Domain.Dtos.Responses;
 using Finance.Domain.Errors;
 using Finance.Domain.Interfaces.Services;
+using Finance.Domain.Models.Configs;
 using Finance.Domain.Models.Entities;
 using Finance.Domain.Utils;
 using Finance.Domain.Utils.Result;
@@ -14,10 +15,12 @@ namespace Finance.Service.Services
     public class UserService : IUserService
     {
         private readonly FinanceContext _context;
+        private readonly AppConfig _appConfig;
 
-        public UserService(FinanceContext context)
+        public UserService(FinanceContext context, AppConfig appConfig)
         {
             _context = context;
+            _appConfig = appConfig;
         }
 
         public async Task<CustomActionResult> AddUserAsync(UserRequest request)
@@ -71,7 +74,7 @@ namespace Finance.Service.Services
                 return UserError.InvalidLogin;
             }
 
-            var token = JwtUtils.CreateJwtToken(user.Value.Email);
+            var token = JwtUtils.CreateJwtToken(user.Value.Email, _appConfig.JwtConfigs.JwtKey, _appConfig.JwtConfigs.Issuer);
 
             return new LoginResponse(TokenType.Bearer, token);
         }
