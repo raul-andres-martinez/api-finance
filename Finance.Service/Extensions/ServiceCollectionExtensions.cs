@@ -32,6 +32,7 @@ namespace Finance.Service.Extensions
 
             //Repositories
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IExpenseRepository, ExpenseRepository>();
 
             //Services
             services.AddScoped<IUserService, UserService>();

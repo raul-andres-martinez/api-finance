@@ -7,7 +7,7 @@ namespace Finance.Domain.Interfaces.Services
 {
     public interface IExpenseService
     {
-        Task<CustomActionResult> AddExpenseAsync(string userEmail, ExpenseRequest request);
+        Task<CustomActionResult> AddExpenseAsync(string? userEmail, ExpenseRequest request);
         Task<CustomActionResult<List<ExpenseResponse>>> GetFilteredExpensesAsync(string userEmail, ExpensesFilterRequest request);
     }
 }

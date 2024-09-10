@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Finance.Domain.Dtos.Requests;
 using Finance.Domain.Dtos.Responses;
+using Finance.Domain.Errors;
+using Finance.Domain.Interfaces.Repositories;
 using Finance.Domain.Interfaces.Services;
 using Finance.Domain.Models.Entities;
 using Finance.Domain.Utils.Result;
@@ -9,32 +11,37 @@ namespace Finance.Service.Services
 {
     public class ExpenseService : IExpenseService
     {
-        private readonly IUserService _userService;
+        private readonly IUserRepository _userRepository;
+        private readonly IExpenseRepository _expenseRepository;
         private readonly IMapper _mapper;
 
-        public ExpenseService(IUserService userService, IMapper mapper)
+        public ExpenseService(IUserRepository userRepository, IExpenseRepository expenseRepository, IMapper mapper)
         {
-            _userService = userService;
+            _userRepository = userRepository;
+            _expenseRepository = expenseRepository;
             _mapper = mapper;
         }
 
-        public async Task<CustomActionResult> AddExpenseAsync(string userEmail, ExpenseRequest request)
+        public async Task<CustomActionResult> AddExpenseAsync(string? userEmail, ExpenseRequest request)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(userEmail))
+            {
+                return ExpenseError.InvalidUser;
+            }
 
-            //var user = await GetUserAsync(userEmail);
+            var user = await _userRepository.GetUserByEmailAsync(userEmail);
 
-            //if (!user.Success || user.Value == null) 
-            //{
-            //    return user;
-            //}
+            if (!user.Success)
+            {
+                return ExpenseError.InvalidUser;
+            }
 
-            //var entity = request.ToEntity(user.Value.Uid);
-            //var result = await _expenseRepository.AddExpense(entity);
+            var entity = _mapper.Map<Expense>(request);
+            entity.UserId = user.Value.Uid;
 
-            //return result ? 
-            //    Result.Ok() :
-            //    Result.Failure("Failed to add new expense.", ErrorCode.DATABASE_ERROR);
+            var result = await _expenseRepository.AddExpenseAsync(entity);
+
+            return result;
         }
 
         public async Task<CustomActionResult<List<ExpenseResponse>>> GetFilteredExpensesAsync(string userEmail, ExpensesFilterRequest request)
@@ -63,20 +70,6 @@ namespace Finance.Service.Services
             //}
 
             //return Result.Ok(expenseResponse);
-        }
-
-        private async Task<CustomActionResult<User>> GetUserAsync(string userEmail)
-        {
-            throw new NotImplementedException();
-
-            //var user = await _userService.GetUserByEmailAsync(userEmail);
-
-            //if (!user.Success || user.Value == null)
-            //{
-            //    return Result.Failure<User>(user.Error, user.ErrorCode);
-            //}
-
-            //return Result.Ok(user.Value);
         }
     }
 }

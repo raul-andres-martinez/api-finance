@@ -1,7 +1,5 @@
 ﻿using Finance.Domain.Enum;
-using Finance.Domain.Models.Entities;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
 namespace Finance.Domain.Dtos.Requests
 {
@@ -30,10 +28,5 @@ namespace Finance.Domain.Dtos.Requests
         [Required]
         public Currency Currency { get; private set; }
         public int? FrequencyInDays { get; private set; }
-
-        public Expense ToEntity(Guid userId)
-        {
-            return new Expense(Amount, Date, Category, Description, PaymentMethod, Currency, FrequencyInDays, userId);
-        }
     }
 }
