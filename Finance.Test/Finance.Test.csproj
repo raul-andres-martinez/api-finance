@@ -10,7 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Bogus" Version="35.6.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.8" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
+    <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="Moq.EntityFrameworkCore" Version="8.0.1.2" />
     <PackageReference Include="xunit" Version="2.4.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -23,8 +27,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Mock\" />
-    <Folder Include="Services\" />
+    <ProjectReference Include="..\Finance.Domain\Finance.Domain.csproj" />
+    <ProjectReference Include="..\Finance.Service\Finance.Service.csproj" />
   </ItemGroup>
 
 </Project>

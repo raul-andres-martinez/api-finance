@@ -22,9 +22,9 @@ namespace Finance.Domain.Dtos.Requests
         [Required]
         public string Password { get; set; }
 
-        public User ToEntity(byte[] passwordHash, byte[] passwordSalt)
+        public static implicit operator User(UserRequest request)
         {
-            return new User(Name, Email, passwordHash, passwordSalt);
+            return new User(request.Name, request.Email, Array.Empty<byte>(), Array.Empty<byte>());
         }
     }
 }

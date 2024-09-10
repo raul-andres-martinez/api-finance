@@ -4,6 +4,7 @@ using Finance.Domain.Errors;
 using Finance.Domain.Interfaces.Repositories;
 using Finance.Domain.Interfaces.Services;
 using Finance.Domain.Models.Configs;
+using Finance.Domain.Models.Entities;
 using Finance.Domain.Utils;
 using Finance.Domain.Utils.Result;
 using static Finance.Domain.Constants.Constant;
@@ -32,7 +33,10 @@ namespace Finance.Service.Services
 
             PasswordHasher.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
-            return await _userRepository.AddUserAsync(request.ToEntity(passwordHash, passwordSalt));
+            User user = request;
+            user.SetHashSalt(passwordHash, passwordSalt);
+
+            return await _userRepository.AddUserAsync(user);
         }
 
         public async Task<CustomActionResult<LoginResponse>> LoginAsync(LoginRequest request)
@@ -60,7 +64,7 @@ namespace Finance.Service.Services
         {
             var duplicate = await _userRepository.GetUserByEmailAsync(email);
 
-            if (duplicate is not null)
+            if (duplicate.Success)
             {
                 return UserError.EmailAlreadyInUse;
             }
