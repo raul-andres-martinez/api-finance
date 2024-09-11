@@ -24,6 +24,46 @@ namespace Finance.Service.Services
 
         public async Task<CustomActionResult> AddExpenseAsync(string? userEmail, ExpenseRequest request)
         {
+            var userResult = await GetUserByEmailAsync(userEmail);
+
+            if (!userResult.Success)
+            {
+                return userResult.GetError();
+            }
+
+            var user = userResult.GetValue();
+            var entity = _mapper.Map<Expense>(request);
+            entity.UserId = user.Uid;
+
+            var result = await _expenseRepository.AddExpenseAsync(entity);
+
+            return result;
+        }
+
+        public async Task<CustomActionResult<List<ExpenseResponse>>> GetFilteredExpensesAsync(string? userEmail, ExpensesFilterRequest request)
+        {
+            var userResult = await GetUserByEmailAsync(userEmail);
+
+            if (!userResult.Success)
+            {
+                return userResult.GetError();
+            }
+
+            var user = userResult.GetValue();
+            var expenses = await _expenseRepository.GetFilteredExpensesAsync(user.Uid, request);
+
+            if (expenses.GetValue().Count == 0)
+            {
+                return CustomActionResult<List<ExpenseResponse>>.NoContent();
+            }
+
+            var expenseResponse = _mapper.Map<List<ExpenseResponse>>(expenses);
+
+            return expenseResponse;
+        }
+
+        private async Task<CustomActionResult<User>> GetUserByEmailAsync(string? userEmail)
+        {
             if (string.IsNullOrWhiteSpace(userEmail))
             {
                 return ExpenseError.InvalidUser;
@@ -36,40 +76,7 @@ namespace Finance.Service.Services
                 return ExpenseError.InvalidUser;
             }
 
-            var entity = _mapper.Map<Expense>(request);
-            entity.UserId = user.Value.Uid;
-
-            var result = await _expenseRepository.AddExpenseAsync(entity);
-
-            return result;
-        }
-
-        public async Task<CustomActionResult<List<ExpenseResponse>>> GetFilteredExpensesAsync(string userEmail, ExpensesFilterRequest request)
-        {
-            throw new NotImplementedException();
-
-            //var user = await GetUserAsync(userEmail);
-
-            //if (!user.Success || user.Value == null)
-            //{
-            //    return Result.Failure<List<ExpenseResponse>>(user.Error, user.ErrorCode);
-            //}
-
-            //var expenses = await _expenseRepository.GetFilteredExpensesAsync(userEmail, request);
-
-            //if (expenses == null)
-            //{
-            //    return Result.Ok(new List<ExpenseResponse>());
-            //}
-
-            //var expenseResponse = _mapper.Map<List<ExpenseResponse>>(expenses);
-
-            //if (expenseResponse == null)
-            //{
-            //    return Result.Failure<List<ExpenseResponse>>("Failed to map expenses.", ErrorCode.INTERNAL_ERROR);
-            //}
-
-            //return Result.Ok(expenseResponse);
+            return user;
         }
     }
 }

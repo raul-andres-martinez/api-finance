@@ -37,14 +37,7 @@ namespace Finance.API.Controllers
         {
             var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
 
-            if (string.IsNullOrEmpty(userEmail))
-            {
-                return Unauthorized();
-            }
-
-            var response = await _expenseService.GetFilteredExpensesAsync(userEmail, request);
-
-            return Ok(response);
+            return await _expenseService.GetFilteredExpensesAsync(userEmail, request);
         }
     }
 }

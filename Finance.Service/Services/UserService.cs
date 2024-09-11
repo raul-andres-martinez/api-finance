@@ -28,7 +28,7 @@ namespace Finance.Service.Services
 
             if (!duplicate.Success)
             {
-                return duplicate.Error;
+                return duplicate.GetError();
             }
 
             PasswordHasher.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
@@ -41,21 +41,23 @@ namespace Finance.Service.Services
 
         public async Task<CustomActionResult<LoginResponse>> LoginAsync(LoginRequest request)
         {
-            var user = await _userRepository.GetUserByEmailAsync(request.Email);
+            var userResult = await _userRepository.GetUserByEmailAsync(request.Email);
 
-            if (!user.Success)
+            if (!userResult.Success)
             {
                 return UserError.InvalidLogin;
             }
 
-            var passwordValid = PasswordHasher.VerifyPasswordHash(request.Password, user.Value.PasswordHash, user.Value.PasswordSalt);
+            var user = userResult.GetValue();
+
+            var passwordValid = PasswordHasher.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt);
 
             if (!passwordValid)
             {
                 return UserError.InvalidLogin;
             }
 
-            var token = JwtUtils.CreateJwtToken(user.Value.Email, _appConfig.JwtConfigs.JwtKey, _appConfig.JwtConfigs.Issuer);
+            var token = JwtUtils.CreateJwtToken(user.Email, _appConfig.JwtConfigs.JwtKey, _appConfig.JwtConfigs.Issuer);
 
             return new LoginResponse(TokenType.Bearer, token);
         }

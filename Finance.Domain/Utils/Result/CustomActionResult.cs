@@ -6,7 +6,7 @@ namespace Finance.Domain.Utils.Result
     public class CustomActionResult : IActionResult
     {
         public bool Success { get; }
-        public CustomError Error { get; }
+        public CustomError? Error { get; }
         public HttpStatusCode StatusCode { get; }
 
         protected CustomActionResult(CustomError error)
@@ -20,7 +20,7 @@ namespace Finance.Domain.Utils.Result
         {
             Success = true;
             StatusCode = statusCode;
-            Error = new CustomError(HttpStatusCode.OK, "Success", "Success");
+            Error = null;
         }
 
         public virtual async Task ExecuteResultAsync(ActionContext context)
@@ -45,6 +45,16 @@ namespace Finance.Domain.Utils.Result
             await result.ExecuteResultAsync(context);
         }
 
+        public CustomError GetError()
+        {
+            if (!Success && Error is not null)
+            {
+                return Error;
+            }
+
+            throw new InvalidOperationException("The action result is either successful or has no error.");
+        }
+
         public static CustomActionResult Created()
         {
             return new CustomActionResult(HttpStatusCode.Created);
@@ -63,9 +73,9 @@ namespace Finance.Domain.Utils.Result
 
     public class CustomActionResult<T> : CustomActionResult
     {
-        public T Value { get; }
+        public T? Value { get; }
 
-        private CustomActionResult(T value, HttpStatusCode statusCode = HttpStatusCode.OK)
+        private CustomActionResult(T? value, HttpStatusCode statusCode = HttpStatusCode.OK)
             : base(statusCode)
         {
             Value = value;
@@ -74,7 +84,7 @@ namespace Finance.Domain.Utils.Result
         private CustomActionResult(CustomError error)
             : base(error)
         {
-            Value = default!;
+            Value = default;
         }
 
         public static implicit operator CustomActionResult<T>(CustomError error)
@@ -87,12 +97,12 @@ namespace Finance.Domain.Utils.Result
             return new CustomActionResult<T>(value);
         }
 
-        public static implicit operator T(CustomActionResult<T> result)
+        public static implicit operator T?(CustomActionResult<T> result)
         {
             return result.Value;
         }
 
-        public async override Task ExecuteResultAsync(ActionContext context)
+        public override async Task ExecuteResultAsync(ActionContext context)
         {
             ObjectResult result;
 
@@ -112,6 +122,21 @@ namespace Finance.Domain.Utils.Result
             }
 
             await result.ExecuteResultAsync(context);
+        }
+
+        public static new CustomActionResult<T> NoContent()
+        {
+            return new CustomActionResult<T>(default, HttpStatusCode.NoContent);
+        }
+
+        public T GetValue()
+        {
+            if (Success && Error is null && Value is not null)
+            {
+                return Value;
+            }
+
+            throw new InvalidOperationException("The action result is either unsuccessful or has an error.");
         }
     }
 }
