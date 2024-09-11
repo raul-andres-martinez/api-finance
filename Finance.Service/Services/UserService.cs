@@ -1,59 +1,77 @@
-﻿using Finance.Domain.Dtos;
-using Finance.Domain.Dtos.Requests;
+﻿using Finance.Domain.Dtos.Requests;
 using Finance.Domain.Dtos.Responses;
-using Finance.Domain.Enum;
+using Finance.Domain.Errors;
 using Finance.Domain.Interfaces.Repositories;
 using Finance.Domain.Interfaces.Services;
+using Finance.Domain.Models.Configs;
 using Finance.Domain.Models.Entities;
+using Finance.Domain.Utils;
+using Finance.Domain.Utils.Result;
 using static Finance.Domain.Constants.Constant;
 
 namespace Finance.Service.Services
 {
     public class UserService : IUserService
     {
-        private readonly IAuthService _authService;
         private readonly IUserRepository _userRepository;
+        private readonly AppConfig _appConfig;
 
-        public UserService(IAuthService authService, IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, AppConfig appConfig)
         {
-            _authService = authService;
             _userRepository = userRepository;
+            _appConfig = appConfig;
         }
 
-        public async Task<bool> AddUserAsync(UserRequest request)
+        public async Task<CustomActionResult> AddUserAsync(UserRequest request)
         {
-            _authService.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
-            return await _userRepository.AddUserAsync(new User(request.Name, request.Email, passwordSalt, passwordHash));
-        }
+            var duplicate = await CheckDuplicateUserAsync(request.Email);
 
-        public async Task<Result<User>> GetUserByEmailAsync(string email)
-        {
-            var result = await _userRepository.GetUserByEmailAsync(email);
-
-            return result is null ? 
-                Result.Failure<User>("No user found.", ErrorCode.USER_NOT_FOUND):
-                Result.Ok(result);
-        }
-
-        public async Task<Result<LoginResponse>> LoginAsync(LoginRequest request)
-        {
-            var user = await GetUserByEmailAsync(request.Email);
-
-            if (!user.Success || user.Value is null)
+            if (!duplicate.Success)
             {
-                return Result.Failure<LoginResponse>(ErrorMessages.Auth.InvalidLogin, ErrorCode.RESOURCE_NOT_FOUND);
+                return duplicate.GetError();
             }
 
-            var passwordValid = _authService.VerifyPasswordHash(request.Password, user.Value.PasswordHash, user.Value.PasswordSalt);
+            PasswordHasher.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+
+            User user = request;
+            user.SetHashSalt(passwordHash, passwordSalt);
+
+            return await _userRepository.AddUserAsync(user);
+        }
+
+        public async Task<CustomActionResult<LoginResponse>> LoginAsync(LoginRequest request)
+        {
+            var userResult = await _userRepository.GetUserByEmailAsync(request.Email);
+
+            if (!userResult.Success)
+            {
+                return UserError.InvalidLogin;
+            }
+
+            var user = userResult.GetValue();
+
+            var passwordValid = PasswordHasher.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt);
 
             if (!passwordValid)
             {
-                return Result.Failure<LoginResponse>(ErrorMessages.Auth.InvalidLogin, ErrorCode.RESOURCE_NOT_FOUND);
+                return UserError.InvalidLogin;
             }
 
-            var token = _authService.CreateJwtToken(user.Value.Email);
+            var token = JwtUtils.CreateJwtToken(user.Email, _appConfig.JwtConfigs.JwtKey, _appConfig.JwtConfigs.Issuer);
 
-            return Result.Ok(new LoginResponse("Bearer", token));
+            return new LoginResponse(TokenType.Bearer, token);
+        }
+
+        private async Task<CustomActionResult> CheckDuplicateUserAsync(string email)
+        {
+            var duplicate = await _userRepository.GetUserByEmailAsync(email);
+
+            if (duplicate.Success)
+            {
+                return UserError.EmailAlreadyInUse;
+            }
+
+            return CustomActionResult.NoContent();
         }
     }
 }

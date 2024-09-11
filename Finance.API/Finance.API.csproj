@@ -15,11 +15,11 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Finance.Domain\Finance.Domain.csproj" />
     <ProjectReference Include="..\Finance.Persistence\Finance.Persistence.csproj" />
     <ProjectReference Include="..\Finance.Service\Finance.Service.csproj" />
   </ItemGroup>

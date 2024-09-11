@@ -1,5 +1,7 @@
-﻿using Finance.Domain.Interfaces.Repositories;
+﻿using Finance.Domain.Errors;
+using Finance.Domain.Interfaces.Repositories;
 using Finance.Domain.Models.Entities;
+using Finance.Domain.Utils.Result;
 using Finance.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,18 +16,30 @@ namespace Finance.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<bool> AddUserAsync(User user)
+        public async Task<CustomActionResult<User>> GetUserByEmailAsync(string email)
+        {
+            var user = await _context.Users
+                .Where(u => u.Email == email).AsQueryable().FirstOrDefaultAsync();
+
+            if (user is null)
+            {
+                return UserError.NotFound;
+            }
+
+            return user;
+        }
+
+        public async Task<CustomActionResult> AddUserAsync(User user)
         {
             await _context.Users.AddAsync(user);
             var changes = await _context.SaveChangesAsync();
-            return changes > 0;
-        }
 
-        public async Task<User> GetUserByEmailAsync(string email)
-        {
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
-            //TODO - Fix null reference w result
-            return user;
+            if (changes is not 1)
+            {
+                return UserError.FailedToCreate;
+            }
+
+            return CustomActionResult.Created();
         }
     }
 }

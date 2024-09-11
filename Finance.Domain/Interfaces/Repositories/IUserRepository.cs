@@ -1,10 +1,11 @@
 ﻿using Finance.Domain.Models.Entities;
+using Finance.Domain.Utils.Result;
 
 namespace Finance.Domain.Interfaces.Repositories
 {
     public interface IUserRepository
     {
-        Task<bool> AddUserAsync(User user);
-        Task<User> GetUserByEmailAsync(string email);
+        Task<CustomActionResult<User>> GetUserByEmailAsync(string email);
+        Task<CustomActionResult> AddUserAsync(User user);
     }
 }

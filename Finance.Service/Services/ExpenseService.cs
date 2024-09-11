@@ -1,80 +1,82 @@
 ﻿using AutoMapper;
-using Finance.Domain.Dtos;
 using Finance.Domain.Dtos.Requests;
 using Finance.Domain.Dtos.Responses;
-using Finance.Domain.Enum;
+using Finance.Domain.Errors;
 using Finance.Domain.Interfaces.Repositories;
 using Finance.Domain.Interfaces.Services;
 using Finance.Domain.Models.Entities;
+using Finance.Domain.Utils.Result;
 
 namespace Finance.Service.Services
 {
     public class ExpenseService : IExpenseService
     {
+        private readonly IUserRepository _userRepository;
         private readonly IExpenseRepository _expenseRepository;
-        private readonly IUserService _userService;
         private readonly IMapper _mapper;
 
-        public ExpenseService(IExpenseRepository expenseRepository, IUserService userService, IMapper mapper)
+        public ExpenseService(IUserRepository userRepository, IExpenseRepository expenseRepository, IMapper mapper)
         {
+            _userRepository = userRepository;
             _expenseRepository = expenseRepository;
-            _userService = userService;
             _mapper = mapper;
         }
 
-        public async Task<Result> AddExpenseAsync(string userEmail, ExpenseRequest request)
+        public async Task<CustomActionResult> AddExpenseAsync(string? userEmail, ExpenseRequest request)
         {
-            var user = await GetUserAsync(userEmail);
+            var userResult = await GetUserByEmailAsync(userEmail);
 
-            if (!user.Success || user.Value == null) 
+            if (!userResult.Success)
             {
-                return user;
+                return userResult.GetError();
             }
 
-            var entity = request.ToEntity(user.Value.Uid);
-            var result = await _expenseRepository.AddExpense(entity);
+            var user = userResult.GetValue();
+            var entity = _mapper.Map<Expense>(request);
+            entity.UserId = user.Uid;
 
-            return result ? 
-                Result.Ok() :
-                Result.Failure("Failed to add new expense.", ErrorCode.DATABASE_ERROR);
+            var result = await _expenseRepository.AddExpenseAsync(entity);
+
+            return result;
         }
 
-        public async Task<Result<List<ExpenseResponse>>> GetFilteredExpensesAsync(string userEmail, ExpensesFilterRequest request)
+        public async Task<CustomActionResult<List<ExpenseResponse>>> GetFilteredExpensesAsync(string? userEmail, ExpensesFilterRequest request)
         {
-            var user = await GetUserAsync(userEmail);
+            var userResult = await GetUserByEmailAsync(userEmail);
 
-            if (!user.Success || user.Value == null)
+            if (!userResult.Success)
             {
-                return Result.Failure<List<ExpenseResponse>>(user.Error, user.ErrorCode);
+                return userResult.GetError();
             }
 
-            var expenses = await _expenseRepository.GetFilteredExpensesAsync(userEmail, request);
+            var user = userResult.GetValue();
+            var expenses = await _expenseRepository.GetFilteredExpensesAsync(user.Uid, request);
 
-            if (expenses == null)
+            if (expenses.GetValue().Count == 0)
             {
-                return Result.Ok(new List<ExpenseResponse>());
+                return CustomActionResult<List<ExpenseResponse>>.NoContent();
             }
 
             var expenseResponse = _mapper.Map<List<ExpenseResponse>>(expenses);
 
-            if (expenseResponse == null)
-            {
-                return Result.Failure<List<ExpenseResponse>>("Failed to map expenses.", ErrorCode.INTERNAL_ERROR);
-            }
-
-            return Result.Ok(expenseResponse);
+            return expenseResponse;
         }
 
-        private async Task<Result<User>> GetUserAsync(string userEmail)
+        private async Task<CustomActionResult<User>> GetUserByEmailAsync(string? userEmail)
         {
-            var user = await _userService.GetUserByEmailAsync(userEmail);
-
-            if (!user.Success || user.Value == null)
+            if (string.IsNullOrWhiteSpace(userEmail))
             {
-                return Result.Failure<User>(user.Error, user.ErrorCode);
+                return ExpenseError.InvalidUser;
             }
 
-            return Result.Ok(user.Value);
+            var user = await _userRepository.GetUserByEmailAsync(userEmail);
+
+            if (!user.Success)
+            {
+                return ExpenseError.InvalidUser;
+            }
+
+            return user;
         }
     }
 }

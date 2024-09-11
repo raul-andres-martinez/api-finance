@@ -1,5 +1,7 @@
 ﻿using Finance.Domain.Dtos.Requests;
+using Finance.Domain.Dtos.Responses;
 using Finance.Domain.Interfaces.Services;
+using Finance.Domain.Utils.Result;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -19,48 +21,29 @@ namespace Finance.API.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> AddExpense(ExpenseRequest request)
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(CustomError), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(CustomError), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(CustomError), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(CustomError), StatusCodes.Status500InternalServerError)]
+        public async Task<CustomActionResult> AddExpense(ExpenseRequest request)
         {
             var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
 
-            if (string.IsNullOrEmpty(userEmail))
-            {
-                return Unauthorized();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var response = await _expenseService.AddExpenseAsync(userEmail, request);
-
-            if (!response.Success)
-            {
-                return BadRequest(response.Error);
-            }
-
-            return Ok();
+            return await _expenseService.AddExpenseAsync(userEmail, request);
         }
 
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> GetExpenses([FromQuery] ExpensesFilterRequest request)
+        [ProducesResponseType(typeof(List<ExpenseResponse>), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(CustomError), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(CustomError), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(CustomError), StatusCodes.Status500InternalServerError)]
+        public async Task<CustomActionResult<List<ExpenseResponse>>> GetExpenses([FromQuery] ExpensesFilterRequest request)
         {
             var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
 
-            if (string.IsNullOrEmpty(userEmail))
-            {
-                return Unauthorized();
-            }
-
-            var response = await _expenseService.GetFilteredExpensesAsync(userEmail, request);
-
-            return Ok(response);
+            return await _expenseService.GetFilteredExpensesAsync(userEmail, request);
         }
     }
 }

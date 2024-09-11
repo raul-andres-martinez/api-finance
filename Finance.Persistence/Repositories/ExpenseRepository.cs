@@ -1,6 +1,8 @@
 ﻿using Finance.Domain.Dtos.Requests;
+using Finance.Domain.Errors;
 using Finance.Domain.Interfaces.Repositories;
 using Finance.Domain.Models.Entities;
+using Finance.Domain.Utils.Result;
 using Finance.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,43 +17,45 @@ namespace Finance.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<bool> AddExpense(Expense expense)
+        public async Task<CustomActionResult> AddExpenseAsync(Expense expense)
         {
             await _context.Expenses.AddAsync(expense);
             var changes = await _context.SaveChangesAsync();
-            return changes > 0;
+
+            if (changes is not 1)
+            {
+                return ExpenseError.FailedToCreate;
+            }
+
+            return CustomActionResult.Created();
         }
 
-        public async Task<List<Expense>> GetFilteredExpensesAsync(string userEmail, ExpensesFilterRequest request)
+        public async Task<CustomActionResult<List<Expense>>> GetFilteredExpensesAsync(Guid userId, ExpensesFilterRequest request)
         {
-            var query = _context.Expenses
-                                .Include(e => e.User)
-                                .AsQueryable();
-
-            query = query.Where(e => e.User != null && e.User.Email == userEmail);
+            var query = _context.Expenses.Where(
+                x => x.UserId == userId);
 
             if (!string.IsNullOrEmpty(request.Category))
             {
-                query = query.Where(e => e.Category == request.Category);
+                query.Where(x => x.Category == request.Category);
             }
 
             if (request.PaymentMethod.HasValue)
             {
-                query = query.Where(e => e.PaymentMethod == request.PaymentMethod.Value);
+                query.Where(x => x.PaymentMethod == request.PaymentMethod.Value);
             }
 
             if (request.Currency.HasValue)
             {
-                query = query.Where(e => e.Currency == request.Currency.Value);
+                query.Where(x => x.Currency == request.Currency.Value);
             }
 
             if (request.Recurring.HasValue)
             {
-                query = query.Where(e => e.Recurring == request.Recurring.Value);
+                query.Where(x => x.Recurring == request.Recurring.Value);
             }
 
             return await query.ToListAsync();
         }
-
     }
 }

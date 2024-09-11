@@ -1,9 +1,9 @@
 ﻿using Finance.Domain.Dtos.Requests;
 using Finance.Domain.Interfaces.Services;
-using Finance.Domain.Enum;
 using Microsoft.AspNetCore.Mvc;
 using Finance.Domain.Dtos.Responses;
-using Finance.Domain.Dtos;
+using Finance.Domain.Utils.Result;
+using System.ComponentModel.DataAnnotations;
 
 namespace Finance.API.Controllers
 {
@@ -19,31 +19,22 @@ namespace Finance.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(UserRequest request)
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(CustomError), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(CustomError), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(CustomError), StatusCodes.Status500InternalServerError)]
+        public async Task<CustomActionResult> Register([FromBody][Required] UserRequest request)
         {
-            var response = await _userService.AddUserAsync(request);
-
-            if (response)
-            {
-                return Ok();
-            }
-
-            return BadRequest();
+            return await _userService.AddUserAsync(request);
         }
 
         [HttpPost("login")]
         [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(Result<LoginResponse>), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Login(LoginRequest request)
+        [ProducesResponseType(typeof(CustomError), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(CustomError), StatusCodes.Status500InternalServerError)]
+        public async Task<CustomActionResult> Login(LoginRequest request)
         {
-            var response = await _userService.LoginAsync(request);
-
-            if (!response.Success) 
-            {
-                return StatusCode(response.ErrorCode.ToStatusCode(), response);
-            }
-
-            return Ok(response);
+            return await _userService.LoginAsync(request);
         }
     }
 }

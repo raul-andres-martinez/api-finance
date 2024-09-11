@@ -16,5 +16,16 @@
         public byte[] PasswordHash { get; private set; }
 
         public List<Expense> Expenses { get; private set; } = [];
+
+        public void SetHashSalt(byte[] hash, byte[] salt)
+        {
+            PasswordHash = hash;
+            PasswordSalt = salt;
+        }
+
+        public void AddExpense(Expense expense)
+        {
+            Expenses.Add(expense);
+        }
     }
 }
