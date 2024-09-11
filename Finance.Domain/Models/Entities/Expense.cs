@@ -4,6 +4,8 @@ namespace Finance.Domain.Models.Entities
 {
     public class Expense : Entity
     {
+        internal Expense() { }
+
         public Expense(decimal amount, DateTime date, string category, string? description, PaymentMethod paymentMethod, Currency currency, int? frequencyInDays, Guid userId)
         {
             Amount = amount;

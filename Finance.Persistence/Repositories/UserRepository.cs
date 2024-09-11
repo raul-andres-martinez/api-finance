@@ -3,7 +3,7 @@ using Finance.Domain.Interfaces.Repositories;
 using Finance.Domain.Models.Entities;
 using Finance.Domain.Utils.Result;
 using Finance.Persistence.Context;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Persistence.Repositories
 {
@@ -19,7 +19,7 @@ namespace Finance.Persistence.Repositories
         public async Task<CustomActionResult<User>> GetUserByEmailAsync(string email)
         {
             var user = await _context.Users
-                .Where(u => u.Email == email).FirstOrDefaultAsync();
+                .Where(u => u.Email == email).AsQueryable().FirstOrDefaultAsync();
 
             if (user is null)
             {

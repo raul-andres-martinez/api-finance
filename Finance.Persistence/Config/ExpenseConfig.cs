@@ -26,8 +26,7 @@ namespace Finance.Persistence.Config
 
             builder.Property(x => x.Description)
                 .HasColumnType("varchar")
-                .HasMaxLength(100)
-                .IsRequired();
+                .HasMaxLength(100);
 
             builder.Property(x => x.PaymentMethod)
                 .HasColumnType("varchar")

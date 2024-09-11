@@ -1,11 +1,10 @@
 ﻿using Finance.Domain.Dtos.Requests;
-using Finance.Domain.Enum;
 using Finance.Domain.Errors;
 using Finance.Domain.Interfaces.Repositories;
 using Finance.Domain.Models.Entities;
 using Finance.Domain.Utils.Result;
 using Finance.Persistence.Context;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Persistence.Repositories
 {

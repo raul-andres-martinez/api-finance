@@ -1,4 +1,5 @@
 ﻿using Finance.Domain.Dtos.Requests;
+using Finance.Domain.Dtos.Responses;
 using Finance.Domain.Interfaces.Services;
 using Finance.Domain.Utils.Result;
 using Microsoft.AspNetCore.Authorization;
@@ -20,9 +21,11 @@ namespace Finance.API.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(CustomError), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(CustomError), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(CustomError), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(CustomError), StatusCodes.Status500InternalServerError)]
         public async Task<CustomActionResult> AddExpense(ExpenseRequest request)
         {
             var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
@@ -31,9 +34,12 @@ namespace Finance.API.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> GetExpenses([FromQuery] ExpensesFilterRequest request)
+        [ProducesResponseType(typeof(List<ExpenseResponse>), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(CustomError), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(CustomError), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(CustomError), StatusCodes.Status500InternalServerError)]
+        public async Task<CustomActionResult<List<ExpenseResponse>>> GetExpenses([FromQuery] ExpensesFilterRequest request)
         {
             var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
 
