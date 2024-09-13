@@ -36,28 +36,11 @@ namespace Finance.Test.Mocks.Fixtures
             {
                 for(var i = 0; i < expenseQuantity; i++)
                 {
-                    user.AddExpense(CreateValidExpense(user.Uid));
+                    user.AddExpense(ExpenseFixture.ValidExpense(user.Uid));
                 }
             }
 
             return users;
-        }
-
-        private static Expense CreateValidExpense(Guid userId)
-        {
-            var expenseFaker = new Faker<Expense>()
-                .CustomInstantiator(faker =>
-                    new Expense(
-                        faker.Finance.Amount(),
-                        faker.Date.Between(DateTime.Now.AddYears(-1), DateTime.Now),
-                        faker.Commerce.Categories(1)[0],
-                        faker.Lorem.Sentence(10),
-                        faker.PickRandom<PaymentMethod>(),
-                        faker.PickRandom<Currency>(),
-                        faker.Random.Bool() ? faker.Random.Int(1, 30) : (int?)null,
-                        userId));
-
-            return expenseFaker.Generate();
         }
 
         private static UserRequest CreateValidUserRequest() 

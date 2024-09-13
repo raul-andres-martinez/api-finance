@@ -54,7 +54,7 @@ namespace Finance.Test.Services
             Assert.NotNull(result);
             Assert.False(result.Success);
             Assert.Equal(UserError.EmailAlreadyInUse.StatusCode, result.StatusCode);
-            Assert.Equal(UserError.EmailAlreadyInUse.Code, result.Error.Code);
+            Assert.Equal(UserError.EmailAlreadyInUse.Code, result.GetError().Code);
 
             Mock.Get(scenario).Verify(r => r.GetUserByEmailAsync(userRequest.Email), Times.Once);
             Mock.Get(scenario).Verify(r => r.AddUserAsync(It.IsAny<User>()), Times.Never);
@@ -79,7 +79,7 @@ namespace Finance.Test.Services
             Assert.NotNull(result);
             Assert.False(result.Success);
             Assert.Equal(UserError.FailedToCreate.StatusCode, result.StatusCode);
-            Assert.Equal(UserError.FailedToCreate.Code, result.Error.Code);
+            Assert.Equal(UserError.FailedToCreate.Code, result.GetError().Code);
 
             Mock.Get(scenario).Verify(r => r.GetUserByEmailAsync(userRequest.Email), Times.Once);
             Mock.Get(scenario).Verify(r => r.AddUserAsync(It.IsAny<User>()), Times.Once);
@@ -128,7 +128,7 @@ namespace Finance.Test.Services
             Assert.NotNull(result);
             Assert.False(result.Success);
             Assert.Equal(UserError.InvalidLogin.StatusCode, result.StatusCode);
-            Assert.Equal(UserError.InvalidLogin.Code, result.Error.Code);
+            Assert.Equal(UserError.InvalidLogin.Code, result.GetError().Code);
 
             Mock.Get(scenario).Verify(r => r.GetUserByEmailAsync(login.Email), Times.Once);
         }
@@ -151,7 +151,7 @@ namespace Finance.Test.Services
             Assert.NotNull(result);
             Assert.False(result.Success);
             Assert.Equal(UserError.InvalidLogin.StatusCode, result.StatusCode);
-            Assert.Equal(UserError.InvalidLogin.Code, result.Error.Code);
+            Assert.Equal(UserError.InvalidLogin.Code, result.GetError().Code);
 
             Mock.Get(scenario).Verify(r => r.GetUserByEmailAsync(It.IsAny<string>()), Times.Once);
         }

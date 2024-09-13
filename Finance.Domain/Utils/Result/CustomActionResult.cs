@@ -126,6 +126,23 @@ namespace Finance.Domain.Utils.Result
 
         public static new CustomActionResult<T> NoContent()
         {
+            if (typeof(T).GetInterface(nameof(IEnumerable<T>)) != null && typeof(T) != typeof(string))
+            {
+                object emptyCollection;
+
+                if (typeof(T).IsInterface || typeof(T).IsAbstract)
+                {
+                    var elementType = typeof(T).GetGenericArguments().FirstOrDefault() ?? typeof(object);
+                    emptyCollection = Activator.CreateInstance(typeof(List<>).MakeGenericType(elementType))!;
+                }
+                else
+                {
+                    emptyCollection = Activator.CreateInstance(typeof(T))!;
+                }
+
+                return new CustomActionResult<T>((T)emptyCollection, HttpStatusCode.NoContent);
+            }
+
             return new CustomActionResult<T>(default, HttpStatusCode.NoContent);
         }
 

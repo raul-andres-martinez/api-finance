@@ -483,3 +483,4 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 /Finance.API/appsettings.Development.json
+/Finance.Test/coverage-report

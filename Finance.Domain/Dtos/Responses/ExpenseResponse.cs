@@ -4,8 +4,9 @@ namespace Finance.Domain.Dtos.Responses
 {
     public class ExpenseResponse
     {
-        public ExpenseResponse(decimal amount, DateTime date, string category, string? description, PaymentMethod paymentMethod, Currency currency, bool recurring, int? frequencyInDays)
+        public ExpenseResponse(Guid uid, decimal amount, DateTime date, string category, string? description, PaymentMethod paymentMethod, Currency currency, bool recurring, int? frequencyInDays)
         {
+            Uid = uid;
             Amount = amount;
             Date = date;
             Category = category;
@@ -16,6 +17,7 @@ namespace Finance.Domain.Dtos.Responses
             FrequencyInDays = frequencyInDays;
         }
 
+        public Guid Uid { get; private set; }
         public decimal Amount { get; private set; }
         public DateTime Date { get; private set; }
         public string Category { get; private set; }
