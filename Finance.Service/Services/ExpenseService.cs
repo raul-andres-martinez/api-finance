@@ -57,7 +57,28 @@ namespace Finance.Service.Services
                 return CustomActionResult<List<ExpenseResponse>>.NoContent();
             }
 
-            var expenseResponse = _mapper.Map<List<ExpenseResponse>>(expenses);
+            var expenseResponse = _mapper.Map<List<ExpenseResponse>>(expenses.GetValue());
+
+            return expenseResponse;
+        }
+
+        public async Task<CustomActionResult<ExpenseResponse>> GetExpenseAsync(string? userEmail, string id)
+        {
+            var userResult = await GetUserByEmailAsync(userEmail);
+
+            if (!userResult.Success)
+            {
+                return userResult.GetError();
+            }
+
+            var expense = await _expenseRepository.GetExpenseAsync(Guid.Parse(id));
+
+            if (expense.Value is null)
+            {
+                return CustomActionResult<ExpenseResponse>.NoContent();
+            }
+
+            var expenseResponse = _mapper.Map<ExpenseResponse>(expense.GetValue());
 
             return expenseResponse;
         }

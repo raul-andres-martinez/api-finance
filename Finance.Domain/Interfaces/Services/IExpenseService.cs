@@ -8,5 +8,6 @@ namespace Finance.Domain.Interfaces.Services
     {
         Task<CustomActionResult> AddExpenseAsync(string? userEmail, ExpenseRequest request);
         Task<CustomActionResult<List<ExpenseResponse>>> GetFilteredExpensesAsync(string? userEmail, ExpensesFilterRequest request);
+        Task<CustomActionResult<ExpenseResponse>> GetExpenseAsync(string? userEmail, string id);
     }
 }

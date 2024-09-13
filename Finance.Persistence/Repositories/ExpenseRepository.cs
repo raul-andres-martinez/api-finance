@@ -5,6 +5,7 @@ using Finance.Domain.Models.Entities;
 using Finance.Domain.Utils.Result;
 using Finance.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
+using System.Data.Entity;
 
 namespace Finance.Persistence.Repositories
 {
@@ -56,6 +57,10 @@ namespace Finance.Persistence.Repositories
             }
 
             return await query.ToListAsync();
+        }
+        public async Task<CustomActionResult<Expense>> GetExpenseAsync(Guid id)
+        {
+            return await _context.Expenses.Where(x => x.Uid == id).SingleOrDefaultAsync();
         }
     }
 }

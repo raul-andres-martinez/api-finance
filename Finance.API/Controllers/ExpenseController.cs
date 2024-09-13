@@ -34,7 +34,7 @@ namespace Finance.API.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(List<ExpenseResponse>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(List<ExpenseResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(CustomError), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(CustomError), StatusCodes.Status403Forbidden)]
@@ -44,6 +44,19 @@ namespace Finance.API.Controllers
             var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
 
             return await _expenseService.GetFilteredExpensesAsync(userEmail, request);
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(List<ExpenseResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(CustomError), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(CustomError), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(CustomError), StatusCodes.Status500InternalServerError)]
+        public async Task<ExpenseResponse> GetExpense([FromQuery] string id)
+        {
+            var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+
+            return await _expenseService.GetExpenseAsync(userEmail, id);
         }
     }
 }
