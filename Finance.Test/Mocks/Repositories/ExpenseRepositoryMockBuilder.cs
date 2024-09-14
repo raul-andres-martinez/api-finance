@@ -11,14 +11,14 @@ namespace Finance.Test.Mocks.Repositories
     {
         private readonly Mock<IExpenseRepository> repositoryMock = new();
 
-        public ExpenseRepositoryMockBuilder AddSuccessfullCreateExpense()
+        public ExpenseRepositoryMockBuilder AddSuccessfulCreateExpense()
         {
             repositoryMock.Setup(repo => repo.AddExpenseAsync(It.IsAny<Expense>()))
                 .ReturnsAsync(CustomActionResult.Created);
             return this;
         }
 
-        public ExpenseRepositoryMockBuilder AddUnsuccessfullCreateExpense()
+        public ExpenseRepositoryMockBuilder AddUnsuccessfulCreateExpense()
         {
             repositoryMock.Setup(repo => repo.AddExpenseAsync(It.IsAny<Expense>()))
                 .ReturnsAsync(ExpenseError.FailedToCreate);
@@ -38,7 +38,31 @@ namespace Finance.Test.Mocks.Repositories
         public ExpenseRepositoryMockBuilder AddGetExpense(Expense? expense)
         {
             repositoryMock.Setup(repo => repo.GetExpenseAsync(It.IsAny<Guid>()))
-                .ReturnsAsync((Guid userId) => expense);
+                .ReturnsAsync((Guid id) => expense);
+
+            return this;
+        }
+
+        public ExpenseRepositoryMockBuilder AddNotFoundDeleteExpense()
+        {
+            repositoryMock.Setup(repo => repo.DeleteExpenseAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(ExpenseError.NotFound);
+
+            return this;
+        }
+
+        public ExpenseRepositoryMockBuilder AddUnsuccessfulDeleteExpense()
+        {
+            repositoryMock.Setup(repo => repo.DeleteExpenseAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(ExpenseError.FailedToDelete);
+
+            return this;
+        }
+
+        public ExpenseRepositoryMockBuilder AddSuccessfulDeleteExpense()
+        {
+            repositoryMock.Setup(repo => repo.DeleteExpenseAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(CustomActionResult.NoContent());
 
             return this;
         }

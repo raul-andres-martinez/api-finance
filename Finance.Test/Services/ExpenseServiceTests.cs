@@ -20,7 +20,7 @@ namespace Finance.Test.Services
             var user = UserFixture.ValidUsers(1).FirstOrDefault();
             var expense = ExpenseFixture.ValidExpenseRequest();
             var expenseRepository = new ExpenseRepositoryMockBuilder()
-                .AddSuccessfullCreateExpense()
+                .AddSuccessfulCreateExpense()
                 .Build();
             var userRepository = new UserRepositoryMockBuilder()
                 .AddGetUserByEmail(user)
@@ -46,7 +46,7 @@ namespace Finance.Test.Services
             // Arrange
             var expense = ExpenseFixture.ValidExpenseRequest();
             var expenseRepository = new ExpenseRepositoryMockBuilder()
-                .AddSuccessfullCreateExpense()
+                .AddSuccessfulCreateExpense()
                 .Build();
             var userRepository = new UserRepositoryMockBuilder()
                 .AddGetUserByEmail(null)
@@ -74,7 +74,7 @@ namespace Finance.Test.Services
             var user = UserFixture.ValidUsers(1).FirstOrDefault();
             var expense = ExpenseFixture.ValidExpenseRequest();
             var expenseRepository = new ExpenseRepositoryMockBuilder()
-                .AddUnsuccessfullCreateExpense()
+                .AddUnsuccessfulCreateExpense()
                 .Build();
             var userRepository = new UserRepositoryMockBuilder()
                 .AddGetUserByEmail(user)
@@ -252,6 +252,111 @@ namespace Finance.Test.Services
 
             Mock.Get(userRepository).Verify(r => r.GetUserByEmailAsync(It.IsAny<string>()), Times.Once);
             Mock.Get(expenseRepository).Verify(r => r.GetExpenseAsync(It.IsAny<Guid>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task DeleteExpense_InvalidUser_ShouldFail()
+        {
+            // Arrange
+            var expenseRepository = new ExpenseRepositoryMockBuilder()
+                .Build();
+            var userRepository = new UserRepositoryMockBuilder()
+                .AddGetUserByEmail(null)
+                .Build();
+
+            var service = ExpenseServiceMock.Mock(userRepository, expenseRepository);
+
+            // Act
+            var result = await service.DeleteExpenseAsync("test", Guid.NewGuid().ToString());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.False(result.Success);
+            Assert.Equal(ExpenseError.InvalidUser.StatusCode, result.StatusCode);
+            Assert.Equal(ExpenseError.InvalidUser.Code, result.GetError().Code);
+
+            Mock.Get(userRepository).Verify(r => r.GetUserByEmailAsync(It.IsAny<string>()), Times.Once);
+            Mock.Get(expenseRepository).Verify(r => r.DeleteExpenseAsync(It.IsAny<Guid>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task DeleteExpense_ValidUser_ExpenseNotFound_ShouldFail()
+        {
+            // Arrange
+            var user = UserFixture.ValidUsers(1).First();
+            var expenseRepository = new ExpenseRepositoryMockBuilder()
+                .AddNotFoundDeleteExpense()
+                .Build();
+            var userRepository = new UserRepositoryMockBuilder()
+                .AddGetUserByEmail(user)
+                .Build();
+
+            var service = ExpenseServiceMock.Mock(userRepository, expenseRepository);
+
+            // Act
+            var result = await service.DeleteExpenseAsync(user.Email, Guid.NewGuid().ToString());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.False(result.Success);
+            Assert.Equal(ExpenseError.NotFound.StatusCode, result.StatusCode);
+            Assert.Equal(ExpenseError.NotFound.Code, result.GetError().Code);
+
+            Mock.Get(userRepository).Verify(r => r.GetUserByEmailAsync(It.IsAny<string>()), Times.Once);
+            Mock.Get(expenseRepository).Verify(r => r.DeleteExpenseAsync(It.IsAny<Guid>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task DeleteExpense_ValidUser_DbError_ShouldFail()
+        {
+            // Arrange
+            var user = UserFixture.ValidUsers(1).First();
+            var expenseRepository = new ExpenseRepositoryMockBuilder()
+                .AddUnsuccessfulDeleteExpense()
+                .Build();
+            var userRepository = new UserRepositoryMockBuilder()
+                .AddGetUserByEmail(user)
+                .Build();
+
+            var service = ExpenseServiceMock.Mock(userRepository, expenseRepository);
+
+            // Act
+            var result = await service.DeleteExpenseAsync(user.Email, Guid.NewGuid().ToString());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.False(result.Success);
+            Assert.Equal(ExpenseError.FailedToDelete.StatusCode, result.StatusCode);
+            Assert.Equal(ExpenseError.FailedToDelete.Code, result.GetError().Code);
+
+            Mock.Get(userRepository).Verify(r => r.GetUserByEmailAsync(It.IsAny<string>()), Times.Once);
+            Mock.Get(expenseRepository).Verify(r => r.DeleteExpenseAsync(It.IsAny<Guid>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task DeleteExpense_ValidUser_ExpenseDeleted_ShouldSucceed()
+        {
+            // Arrange
+            var user = UserFixture.ValidUsers(1).First();
+            var expenseRepository = new ExpenseRepositoryMockBuilder()
+                .AddSuccessfulDeleteExpense()
+                .Build();
+            var userRepository = new UserRepositoryMockBuilder()
+                .AddGetUserByEmail(user)
+                .Build();
+
+            var service = ExpenseServiceMock.Mock(userRepository, expenseRepository);
+
+            // Act
+            var result = await service.DeleteExpenseAsync(user.Email, Guid.NewGuid().ToString());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(result.Success);
+            Assert.Equal(HttpStatusCode.NoContent, result.StatusCode);
+
+            Mock.Get(userRepository).Verify(r => r.GetUserByEmailAsync(It.IsAny<string>()), Times.Once);
+            Mock.Get(expenseRepository).Verify(r => r.DeleteExpenseAsync(It.IsAny<Guid>()), Times.Once);
         }
     }
 }

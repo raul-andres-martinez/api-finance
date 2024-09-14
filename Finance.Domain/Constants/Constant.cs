@@ -21,7 +21,8 @@
             {
                 public static string InvalidUser = "User not authorized.";
                 public const string FailedToCreate = "Failed to create expense.";
-
+                public const string NotFound = "Expense not found.";
+                public const string FailedToDelete = "Failed to delete expense.";
             }
         }
 
@@ -38,7 +39,9 @@
             public static class Expense
             {
                 public static string InvalidUser = "Expense.InvalidUser";
-                public const string FailedToCreate = "Failed to create expense.";
+                public const string FailedToCreate = "Expense.FailedToCreate";
+                public const string NotFound = "Expense.NotFound";
+                public const string FailedToDelete = "Expense.FailedToDelete";
             }
         }
     }

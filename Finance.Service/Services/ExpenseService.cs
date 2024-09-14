@@ -83,6 +83,20 @@ namespace Finance.Service.Services
             return expenseResponse;
         }
 
+        public async Task<CustomActionResult> DeleteExpenseAsync(string? userEmail, string id)
+        {
+            var userResult = await GetUserByEmailAsync(userEmail);
+
+            if (!userResult.Success)
+            {
+                return userResult.GetError();
+            }
+
+            var expense = await _expenseRepository.DeleteExpenseAsync(Guid.Parse(id));
+
+            return expense;
+        }
+
         private async Task<CustomActionResult<User>> GetUserByEmailAsync(string? userEmail)
         {
             if (string.IsNullOrWhiteSpace(userEmail))

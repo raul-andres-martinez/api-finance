@@ -1,4 +1,5 @@
 ﻿using Finance.Domain.Dtos.Requests;
+using Finance.Domain.Dtos.Responses;
 using Finance.Domain.Errors;
 using Finance.Domain.Interfaces.Repositories;
 using Finance.Domain.Models.Entities;
@@ -58,9 +59,31 @@ namespace Finance.Persistence.Repositories
 
             return await query.ToListAsync();
         }
+
         public async Task<CustomActionResult<Expense>> GetExpenseAsync(Guid id)
         {
             return await _context.Expenses.Where(x => x.Uid == id).SingleOrDefaultAsync();
+        }
+
+        public async Task<CustomActionResult> DeleteExpenseAsync(Guid id)
+        {
+            var expense = await _context.Expenses.FindAsync(id);
+
+            if (expense is null)
+            {
+                return ExpenseError.NotFound;
+            }
+
+            _context.Expenses.Remove(expense);
+
+            var changes = await _context.SaveChangesAsync();
+
+            if (changes is not 1)
+            {
+                return ExpenseError.FailedToDelete;
+            }
+
+            return CustomActionResult.NoContent();
         }
     }
 }
