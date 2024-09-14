@@ -46,13 +46,13 @@ namespace Finance.API.Controllers
             return await _expenseService.GetFilteredExpensesAsync(userEmail, request);
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         [ProducesResponseType(typeof(List<ExpenseResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(CustomError), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(CustomError), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(CustomError), StatusCodes.Status500InternalServerError)]
-        public async Task<CustomActionResult<ExpenseResponse>> GetExpense([FromQuery] string id)
+        public async Task<CustomActionResult<ExpenseResponse>> GetExpense([FromRoute] string id)
         {
             var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
 
@@ -63,7 +63,6 @@ namespace Finance.API.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(CustomError), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(CustomError), StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(typeof(CustomError), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(CustomError), StatusCodes.Status500InternalServerError)]
         public async Task<CustomActionResult> DeleteExpense([FromQuery] string id)
         {
